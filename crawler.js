@@ -15,6 +15,7 @@ class Crawler extends EventEmitter {
       limitForRedirects: 5,
       timeout: 300,
       headers: { 'User-Agent': 'Mozilla/5.0' },
+      filter: []
     };
 
     if (typeof config === 'string') {
@@ -120,6 +121,16 @@ class Crawler extends EventEmitter {
       }
     } else if (!urlObject.protocol && !urlObject.host && urlObject.path) {
       result = true;
+    }
+
+    if (result && this.config.filter.length > 0) {
+      let found = false;
+      this.config.filter.forEach((filter) => {
+        if (!found && urlString.match(filter)) {
+          found = true;
+          result = false;
+        }
+      });
     }
 
     return result;
